@@ -18,6 +18,10 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+
+#include "../dl_node.hpp"
+#include "../entry_node.hpp"
+#include "../exit_node.hpp"
 #include "../modelconfig.hpp"
 #include "../pipeline.hpp"
 #include "../pipeline_factory.hpp"

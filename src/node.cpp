@@ -20,9 +20,25 @@
 
 #include <spdlog/spdlog.h>
 
+#include "nodesession.hpp"
 #include "status.hpp"
 
 namespace ovms {
+
+Node::Node(const std::string& nodeName) :
+    nodeName(nodeName) {
+}
+Status Node::fetchResults(session_key_t sessionId, std::unordered_map<session_key_t, std::pair<NodeSessionMetadata, BlobMap>>& nodeSessionOutputs) {
+    auto it = nodeSessions.find(sessionId);
+    auto& nodeSession = it->second;
+    if (it == nodeSessions.end()) {
+    // TODO error handle
+        return StatusCode::UNKNOWN_ERROR;
+    }
+    return fetchResults(*nodeSession, nodeSessionOutputs);
+}
+
+Status Node::fetchResults(NodeSession& nodeSession, std::unordered_map<session_key_t, std::pair<NodeSessionMetadata, BlobMap>>& nodeSessionOutputs) { return StatusCode::OK;} // TODO remove
 
 void Node::printNodeConnections(const std::string& nodeName, const std::string& sourceNode, const InputPairs& pairs) {
     std::stringstream ss;
@@ -57,10 +73,25 @@ Status Node::setInputs(const Node& dependency, BlobMap& inputs) {
             current_node_input_name,
             dependency_output_name);
         this->inputBlobs[current_node_input_name] = it->second;
+        NodeSessionMetadata metadata;
+        getNodeSession(metadata).setInput(current_node_input_name, it->second);
     }
 
     finishedDependenciesCount++;
     return StatusCode::OK;
+}
+
+NodeSession& Node::getNodeSession(const NodeSessionMetadata& metadata) {
+    auto it = nodeSessions.find(metadata.getSessionKey());
+    if (it != nodeSessions.end()) {
+        return *(*it).second;
+    }
+    auto emplacePair = nodeSessions.emplace(metadata.getSessionKey(), createNodeSession(metadata));
+    return *(*(emplacePair.first)).second;
+}
+
+std::unique_ptr<NodeSession> Node::createNodeSession(const NodeSessionMetadata& metadata) {
+    return std::make_unique<NodeSession>(metadata);
 }
 
 }  // namespace ovms

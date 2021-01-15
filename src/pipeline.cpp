@@ -23,7 +23,27 @@
 #include "logging.hpp"
 #include "threadsafequeue.hpp"
 
+#include "node.hpp"
+#include "entry_node.hpp"
+#include "exit_node.hpp"
+
 namespace ovms {
+Pipeline::~Pipeline() = default;
+
+Pipeline::Pipeline(EntryNode& entry, ExitNode& exit, const std::string& name) :
+        name(name),
+        entry(entry),
+        exit(exit) {}
+
+void Pipeline::push(std::unique_ptr<Node> node) {
+        nodes.emplace_back(std::move(node));
+}
+void Pipeline::connect(Node& from, Node& to, const InputPairs& blobNamesMapping) {
+        SPDLOG_LOGGER_DEBUG(dag_executor_logger, "Connecting from: {}, to: {}", from.getName(), to.getName());
+        printNodeConnections(to.getName(), from.getName(), blobNamesMapping);
+        from.addDependant(to);
+        to.addDependency(from, blobNamesMapping);
+    }
 
 void printNodeConnections(const std::string& nodeName, const std::string& sourceNode, const InputPairs& pairs) {
     if (spdlog::default_logger()->level() > spdlog::level::debug) {

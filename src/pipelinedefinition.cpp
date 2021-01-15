@@ -19,8 +19,12 @@
 #include <set>
 #include <thread>
 
+#include "entry_node.hpp"
+#include "exit_node.hpp"
+#include "dl_node.hpp"
 #include "logging.hpp"
 #include "modelmanager.hpp"
+#include "pipeline.hpp"
 #include "pipelinedefinitionunloadguard.hpp"
 #include "prediction_service_utils.hpp"
 

@@ -16,6 +16,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "../entry_node.hpp"
+#include "../exit_node.hpp"
 #include "../pipeline_factory.hpp"
 #include "test_utils.hpp"
 

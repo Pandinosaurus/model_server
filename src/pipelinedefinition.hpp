@@ -31,17 +31,20 @@
 #pragma GCC diagnostic pop
 
 #include "model_version_policy.hpp"
-#include "node.hpp"
-#include "pipeline.hpp"
+#include "node.hpp" // TODO remove
 #include "pipelinedefinitionstatus.hpp"
 #include "pipelinedefinitionunloadguard.hpp"
 #include "status.hpp"
+#include "tensorinfo.hpp"
 
 namespace ovms {
 
 class ModelManager;
+class Pipeline;
 
 using pipeline_connections_t = std::unordered_map<std::string, std::unordered_map<std::string, InputPairs>>;
+using InputPairs = std::vector<std::pair<std::string, std::string>>;
+using tensor_map_t = std::map<std::string, std::shared_ptr<TensorInfo>>;
 
 enum class NodeKind {
     ENTRY,
